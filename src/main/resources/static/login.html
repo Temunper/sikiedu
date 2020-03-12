@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+<h1>登录</h1>
+用户名：
+<form action="/loginPage" method="post">
+<input type="text" name="username"/>
+<br/>
+密码：
+<input type="password" name="password"/>
+
+    图片验证码：
+    <input type="text" name="imageCode">
+    <img src="/code/image?width=300">
+    <br/>
+    <input name="remember-me" type="checkbox" value="true"> 记住我
+<input type="submit" value="登录">
+</form>
+</body>
+</html>
