@@ -4,6 +4,7 @@ import com.example.RESTful.controller.ValidateCodeController;
 import com.example.RESTful.exception.ValidateCodeException;
 import com.example.RESTful.properties.SikieduSecurityProperties;
 import com.example.RESTful.validate.code.ImageCode;
+import com.example.RESTful.validate.processor.ValidateCodeProcessor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
@@ -70,7 +71,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
 
     private void validate(ServletWebRequest request) throws ServletRequestBindingException, ValidateCodeException {
 
-        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeController.sessionKey);
+        ImageCode codeInSession = (ImageCode) sessionStrategy.getAttribute(request, ValidateCodeProcessor.SESSION_KEY);
         String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "imageCode");
         if (StringUtils.isEmpty(codeInRequest)) {
             throw new ValidateCodeException("验证码不能为空");
@@ -85,7 +86,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
             throw new ValidateCodeException("验证码不匹配");
         }
 
-        sessionStrategy.removeAttribute(request, ValidateCodeController.sessionKey);
+        sessionStrategy.removeAttribute(request, ValidateCodeProcessor.SESSION_KEY);
 
     }
 

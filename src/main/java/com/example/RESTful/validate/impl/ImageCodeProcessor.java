@@ -1,30 +1,24 @@
 package com.example.RESTful.validate.impl;
 
 import com.example.RESTful.validate.code.ImageCode;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Random;
 
-public class ImageCodeProcessor extends AbstractValidateCodeProcessor{
+@Component("imageCodeProcessor")
+public class ImageCodeProcessor extends AbstractValidateCodeProcessor<ImageCode>{
     @Override
-    protected void generate() {
-        ImageCode imageCode = createImageCode(request);
-
-        sessionStrategy.setAttribute(new ServletWebRequest(request), sessionKey, imageCode);
-
-        assert imageCode != null;
-
-        ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
-    }
-
-    private ImageCode createImageCode(HttpServletRequest request) {
-        int width = ServletRequestUtils.getIntParameter(request, "width", sikieduSecurityProperties.getCodeProperties().getImageCodeProperties().getWidth());
-        int height = ServletRequestUtils.getIntParameter(request, "height", sikieduSecurityProperties.getCodeProperties().getImageCodeProperties().getHeight());
+    protected ImageCode generate(ServletWebRequest request) {
+        int width = ServletRequestUtils.getIntParameter(request.getRequest(), "width", getSikieduSecurityProperties().getCodeProperties().getImageCodeProperties().getWidth());
+        int height = ServletRequestUtils.getIntParameter(request.getRequest(), "height", getSikieduSecurityProperties().getCodeProperties().getImageCodeProperties().getHeight());
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         Graphics g = image.getGraphics();
@@ -40,7 +34,7 @@ public class ImageCodeProcessor extends AbstractValidateCodeProcessor{
         }
 
         String sRand = "";
-        for (int i = 0; i < sikieduSecurityProperties.getCodeProperties().getImageCodeProperties().getLength(); i++) {
+        for (int i = 0; i < getSikieduSecurityProperties().getCodeProperties().getImageCodeProperties().getLength(); i++) {
             String rand = String.valueOf(random.nextInt(10));
             sRand += rand;
             g.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));
@@ -48,13 +42,15 @@ public class ImageCodeProcessor extends AbstractValidateCodeProcessor{
         }
 
         g.dispose();
-        return new ImageCode(image, sRand, sikieduSecurityProperties.getCodeProperties().getImageCodeProperties().getExpireIn());
+        return new ImageCode(image, sRand, getSikieduSecurityProperties().getCodeProperties().getImageCodeProperties().getExpireIn());
     }
 
     @Override
-    protected void send() {
+    protected void send(ServletWebRequest request,HttpServletResponse response, ImageCode imageCode) throws IOException {
+
         assert imageCode != null;
 
         ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
     }
+
 }

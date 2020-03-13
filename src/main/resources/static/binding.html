@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>绑定用户</title>
+</head>
+<script type="text/javascript" src="jquery.min.js"></script>
+<body>
+
+	<h1>微信绑定</h1>
+	<form action="/connect/weixin" method="post">
+		<button type="submit">提交</button>
+	</form>
+	
+	<h1>解除绑定</h1>
+	<button id="test">解除绑定</button>
+	
+	<script type="text/javascript">
+	
+		$("#test").on("click",function(){
+			//表单提交不能发送delete请求，所以我们用ajax来去发送
+			
+			$.ajax({
+				
+				url:"http://www.pinzhi365.com/connect/weixin",
+				type:"DELETE",
+				contentType:"application/json",
+				data:"",
+				dataType:"json",
+				success:function(result){
+					
+				}
+					
+				
+			})
+			
+			
+		})
+				
+	
+	
+	
+	</script>
+
+</body>
+</html>
