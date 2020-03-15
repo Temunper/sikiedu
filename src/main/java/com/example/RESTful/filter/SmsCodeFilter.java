@@ -3,9 +3,15 @@ package com.example.RESTful.filter;
 import com.example.RESTful.exception.ValidateCodeException;
 import com.example.RESTful.handler.LoginFailureHandler;
 import com.example.RESTful.properties.SikieduSecurityProperties;
+import com.example.RESTful.validate.code.ValidateCode;
+import com.example.RESTful.validate.processor.ValidateCodeProcessor;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.social.connect.web.HttpSessionSessionStrategy;
+import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +26,8 @@ import java.util.Set;
 
 public class SmsCodeFilter extends OncePerRequestFilter implements InitializingBean {
     private LoginFailureHandler failureHandler;
+
+    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
     private SikieduSecurityProperties sikieduSecurityProperties;
 
@@ -56,7 +64,22 @@ public class SmsCodeFilter extends OncePerRequestFilter implements InitializingB
         filterChain.doFilter(request,response);
     }
 
-    private void validate(ServletWebRequest request) {
+    private void validate(ServletWebRequest request) throws ServletRequestBindingException {
+        ValidateCode codeInSession = (ValidateCode) sessionStrategy.getAttribute(request, ValidateCodeProcessor.SESSION_KEY);
+        String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(),"smsCode");
+        if (StringUtils.isEmpty(codeInRequest)){
+            throw new ValidateCodeException("验证码不能为空");
+        }
+        if (codeInSession == null){
+            throw new ValidateCodeException("验证码不存在");
+        }
+        if (codeInSession.isExpired()){
+            throw new ValidateCodeException("验证码超时");
+        }
+        if (!codeInSession.getCode().equals(codeInRequest)){
+            throw new ValidateCodeException("验证码输入错误");
+        }
+        sessionStrategy.removeAttribute(request,ValidateCodeProcessor.SESSION_KEY);
     }
 
     public SikieduSecurityProperties getSikieduSecurityProperties() {
@@ -65,5 +88,13 @@ public class SmsCodeFilter extends OncePerRequestFilter implements InitializingB
 
     public void setSikieduSecurityProperties(SikieduSecurityProperties sikieduSecurityProperties) {
         this.sikieduSecurityProperties = sikieduSecurityProperties;
+    }
+
+    public LoginFailureHandler getFailureHandler() {
+        return failureHandler;
+    }
+
+    public void setFailureHandler(LoginFailureHandler failureHandler) {
+        this.failureHandler = failureHandler;
     }
 }

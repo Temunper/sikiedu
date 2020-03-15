@@ -1,9 +1,11 @@
 package com.example.RESTful.config;
 
+import com.example.RESTful.filter.SmsCodeFilter;
 import com.example.RESTful.filter.ValidateCodeFilter;
 import com.example.RESTful.handler.LoginFailureHandler;
 import com.example.RESTful.handler.LoginSuccessHandler;
 import com.example.RESTful.properties.SikieduSecurityProperties;
+import com.example.RESTful.validate.processor.ValidateCodeProcessorHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private ValidateCodeProcessorHolder validateCodeProcessorHolder;
+
+    @Autowired
+    private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
     public PersistentTokenRepository persistentTokenRepository(){
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
@@ -55,12 +62,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         validateCodeFilter.setAuthenticationFailureHandler(loginFailureHandler);
         validateCodeFilter.setSikieduSecurityProperties(sikieduSecurityProperties);
         validateCodeFilter.afterPropertiesSet();
+        validateCodeFilter.setValidateCodeProcessorHolder(validateCodeProcessorHolder);
+//        SmsCodeFilter smsCodeFilter = new SmsCodeFilter();
+//        smsCodeFilter.setFailureHandler(loginFailureHandler);
+//        validateCodeFilter.setSikieduSecurityProperties(sikieduSecurityProperties);
+//        validateCodeFilter.afterPropertiesSet();
 
         httpSecurity
+//                .addFilterBefore(smsCodeFilter,UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
-                .loginPage("/require")
-                .loginProcessingUrl("/loginPage")
+                .loginPage(SecurityConstants.DEFAULT_UNAUTHENTICATION_URL)
+                .loginProcessingUrl(SecurityConstants.DEFAULT_SIGN_IN_PROCESSOR_FORM)
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
                 .and()
@@ -74,6 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and().csrf().disable()
+        .apply(smsCodeAuthenticationSecurityConfig)
         ;
     }
 }
