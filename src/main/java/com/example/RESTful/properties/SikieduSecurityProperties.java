@@ -9,6 +9,8 @@ public class SikieduSecurityProperties {
 
     private ValidateCodeProperties codeProperties = new ValidateCodeProperties();
 
+    private QQProperties qqProperties = new QQProperties();
+
     private int rememberMeSeconds = 36000;
 
     public LoginType getLoginType() {
@@ -33,5 +35,13 @@ public class SikieduSecurityProperties {
 
     public void setRememberMeSeconds(int rememberMeSeconds) {
         this.rememberMeSeconds = rememberMeSeconds;
+    }
+
+    public QQProperties getQqProperties() {
+        return qqProperties;
+    }
+
+    public void setQqProperties(QQProperties qqProperties) {
+        this.qqProperties = qqProperties;
     }
 }

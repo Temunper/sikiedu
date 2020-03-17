@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.sql.DataSource;
 
@@ -25,7 +26,7 @@ import javax.sql.DataSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -50,14 +51,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
-    public PersistentTokenRepository persistentTokenRepository(){
+
+
+    @Autowired
+    private SpringSocialConfigurer sikieduSpringSocialConfigurer;
+
+    public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         return tokenRepository;
     }
 
     @Override
-    protected void configure(HttpSecurity httpSecurity)throws Exception{
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
         validateCodeFilter.setAuthenticationFailureHandler(loginFailureHandler);
         validateCodeFilter.setSikieduSecurityProperties(sikieduSecurityProperties);
@@ -83,11 +89,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(userDetailsService)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login.html","/require","/code/image","/code/sms").permitAll()
+                .antMatchers("/login.html", "/require", "/code/image", "/code/sms").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().csrf().disable()
-        .apply(smsCodeAuthenticationSecurityConfig)
+                .apply(smsCodeAuthenticationSecurityConfig)
+                .and()
+                .apply(sikieduSpringSocialConfigurer)
         ;
     }
 }

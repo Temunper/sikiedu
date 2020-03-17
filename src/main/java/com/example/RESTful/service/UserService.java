@@ -9,10 +9,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.social.security.SocialUser;
+import org.springframework.social.security.SocialUserDetails;
+import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service("UserService")
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, SocialUserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -22,12 +25,24 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        System.out.println(username);
-        User user = userRepository.findUserByUsername(username);
+        return buildUser(username);
+    }
+
+    @Override
+    public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException {
+
+
+        return (SocialUserDetails) buildUser(userId);
+
+    }
+
+    private UserDetails buildUser(String userId){
+        System.out.println(userId);
+        User user = userRepository.findUserByUsername(userId);
         if (user == null){
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(userId);
         }
-        return new User(username,passwordEncoder.encode(user.getPassword()), AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
+        return new SocialUser(userId,passwordEncoder.encode(user.getPassword()), AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
 
     }
 }
