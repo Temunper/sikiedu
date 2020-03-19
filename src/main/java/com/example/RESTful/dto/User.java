@@ -6,12 +6,19 @@ public class User {
 
     public String id;
 
+
     public interface UserSimple{};
     public interface UserDetail extends UserSimple{};
 
 
     private String username;
     private String password;
+
+//    public User(String id,String username,String password){
+//        this.id = id;
+//        this.username = username;
+//        this.password = password;
+//    }
 
     @JsonView(UserSimple.class)
     public String getUsername() {

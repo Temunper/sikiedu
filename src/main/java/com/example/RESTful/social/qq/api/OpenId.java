@@ -2,7 +2,7 @@ package com.example.RESTful.social.qq.api;
 
 public class OpenId {
     private String client_id;
-    private String openId;
+    private String openid;
 
     public String getClient_id() {
         return client_id;
@@ -12,11 +12,11 @@ public class OpenId {
         this.client_id = client_id;
     }
 
-    public String getOpenId() {
-        return openId;
+    public String getOpenid() {
+        return openid;
     }
 
-    public void setOpenId(String openId) {
-        this.openId = openId;
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 }

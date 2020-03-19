@@ -13,6 +13,8 @@ public class SikieduSecurityProperties {
 
     private int rememberMeSeconds = 36000;
 
+    private String signUpUrl = "/signUp.html";
+
     public LoginType getLoginType() {
         return loginType;
     }
@@ -43,5 +45,13 @@ public class SikieduSecurityProperties {
 
     public void setQqProperties(QQProperties qqProperties) {
         this.qqProperties = qqProperties;
+    }
+
+    public String getSignUpUrl() {
+        return signUpUrl;
+    }
+
+    public void setSignUpUrl(String signUpUrl) {
+        this.signUpUrl = signUpUrl;
     }
 }

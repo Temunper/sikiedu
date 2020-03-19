@@ -5,6 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 import org.springframework.social.oauth2.TokenStrategy;
+import org.springframework.util.StringUtils;
+import java.io.IOException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 
 import java.io.IOException;
 
@@ -24,6 +28,8 @@ public class QQImpl extends AbstractOAuth2ApiBinding implements QQ {
         QQUserInfo userInfo = null;
         try {
             userInfo = objectMapper.readValue(result, QQUserInfo.class);
+            userInfo.setOpenId(openId);
+            System.out.println(userInfo);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -40,14 +46,16 @@ public class QQImpl extends AbstractOAuth2ApiBinding implements QQ {
         String result = getRestTemplate().getForObject(url, String.class);
 
         System.out.println(result);
-
+        result = StringUtils.replace(result,"callback( ","");
+        result = StringUtils.replace(result," );","");
+        System.out.println(result);
         OpenId id = null;
         try {
             id = objectMapper.readValue(result, OpenId.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        this.openId = id.getOpenId();
+        this.openId = id.getOpenid();
 
     }
 }

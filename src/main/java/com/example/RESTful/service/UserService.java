@@ -15,7 +15,7 @@ import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service("UserService")
-public class UserService implements UserDetailsService, SocialUserDetailsService {
+public class UserService implements UserDetailsService, SocialUserDetailsService,IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -44,5 +44,10 @@ public class UserService implements UserDetailsService, SocialUserDetailsService
         }
         return new SocialUser(userId,passwordEncoder.encode(user.getPassword()), AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
 
+    }
+
+    @Override
+    public void register(User user) {
+        userRepository.save(user);
     }
 }

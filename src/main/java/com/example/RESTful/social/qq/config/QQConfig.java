@@ -5,6 +5,7 @@ import com.example.RESTful.properties.SikieduSecurityProperties;
 import com.example.RESTful.social.qq.connection.provider.QQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.config.annotation.ConnectionFactoryConfigurer;
@@ -14,6 +15,7 @@ import org.springframework.social.security.AuthenticationNameUserIdSource;
 
 @Configuration
 @EnableSocial
+@Order(1)
 public class QQConfig extends SocialConfigurerAdapter {
 
     @Autowired

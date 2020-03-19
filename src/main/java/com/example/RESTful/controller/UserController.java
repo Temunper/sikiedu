@@ -1,15 +1,42 @@
 package com.example.RESTful.controller;
 
 import com.example.RESTful.dto.User;
+import com.example.RESTful.service.IUserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.connect.web.HttpSessionSessionStrategy;
+import org.springframework.social.connect.web.ProviderSignInAttempt;
+import org.springframework.social.connect.web.ProviderSignInUtils;
+import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
+import sun.plugin.dom.core.Element;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @Autowired
+    private IUserService userService;
+
+    @Autowired
+    private ProviderSignInUtils providerSignInUtils;
+
+
+    @PostMapping("/register")
+    public void register(User user , HttpServletRequest request){
+        com.example.RESTful.domain.User domainUser = new com.example.RESTful.domain.User(null,user.getUsername(),user.getPassword());
+        userService.register(domainUser);
+        String userId = user.getUsername();
+        providerSignInUtils.doPostSignUp(userId, new ServletWebRequest(request));
+
+    }
+
 
     @GetMapping
     @JsonView(User.UserSimple.class)
