@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>登录</title>
+</head>
+<body>
+<h1>登录</h1>
+
+	<form action="/loginPage" method="post">
+	
+		用户名：
+		<input type="text" name="username">
+		<br>
+		密码:
+		<input type="password" name="password">
+		<br>
+		图片验证码：
+		<input type="text" name="imageCode">
+		<img src="/code/image?width=100">
+		<br>
+		<!-- name固定 -->
+		<input name="remember-me" type="checkbox" value="true">
+		记住我
+		<input type="submit">
+		
+	</form>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<form action="/loginMobilePage" >
+	电话号码：
+	<input type="text" name="mobile" value="13265914348">
+	<br/>
+	短信验证码：
+	<input type="text" name="smsCode">
+	<a href="/code/sms?mobile=13265914348">发送短信验证码</a>
+	<input type="submit">
+</form>
+
+	<h1>社交</h1>
+	<a href="/qqLogin/callback.do">QQ登录</a>
+	<br>
+	<a href="/qqLogin/weixin">微信登录</a>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
